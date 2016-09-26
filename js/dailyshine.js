@@ -113,7 +113,7 @@
     var template;
     var i;
     var id;
-    var delay;
+    var delay = 2700;
 
     // Merge user data into the message and turn URLs into links
     body = makeLinks(mergeData(localized(content.body)));
@@ -155,13 +155,13 @@
         data.id = id;
       // Render the template and add the message to the screen
       if (data.media) {
-        // Media animation
         template = $('#template-mt-media').html();
         html = ejs.render(template, data, {delimiter: '?'});
         element = $('#container-media').append(html).hide()
           .delay(300)
           .fadeIn(600);
 
+        // Media animation
         $('.mt-media').css('top', '-500px')
           .delay(500)
           .animate({
@@ -178,13 +178,17 @@
         }
       else if (data.linkTitle && data.linkUrl) {
         template = $('#template-mt-link').html();
-        id = 'mt-link-' + messageCounter + i;
+        id = 'mt-link-' + messageCounter + '-' + i;
         data.id = id;
         html = ejs.render(template, data, {delimiter: '?'});
         element = $('#container-messages').append(html);
 
+        if ($('#container-media').children().length === 0 || messageCounter > 1) {
+          delay = 600;
+        }
+        // Message w/ Link animation
         $('#' + id).css('left', '-200%').css('opacity', '0')
-          .delay(2700)
+          .delay(delay)
           .animate({
             left: ANIM_SPRING_DISTANCE,
             opacity: 1
@@ -195,13 +199,18 @@
       }
       else {
         template = $('#template-mt').html();
-        id = 'mt-message-' + messageCounter + i;
+        id = 'mt-message-' + messageCounter + '-' + i;
         data.id = id;
         html = ejs.render(template, data, {delimiter: '?'});
         element = $('#container-messages').append(html);
 
+        if ($('#container-media').children().length === 0 || messageCounter > 1) {
+          delay = 600;
+        }
+
+        // Regular message animation
         $('#' + id).css('left', '-200%').css('opacity', '0')
-          .delay(600)
+          .delay(delay)
           .animate({
             left: ANIM_SPRING_DISTANCE,
             opacity: 1
@@ -313,7 +322,10 @@
     $('#container-messages')
       .append(container)
 
-    if (messageCounter > 1) { delay = 2400; }
+    if ($('#container-media').children().length === 0 || messageCounter > 1) {
+      delay = 2400;
+    }
+
     $('#' + id).css('right', '-200%').css('opacity', '0')
       .delay(delay)
       .animate({
