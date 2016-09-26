@@ -47,6 +47,7 @@ html {
 }
 
 .message-bubble {
+  position: relative;
   border-radius: 8px;
   display: inline-block;
   font-size: 18px;
@@ -54,11 +55,13 @@ html {
   margin: 4px 0;
   max-width: 272px; /* accounts for the padding to make the width=300 */
   padding: 14px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .message-bubble.mt-media {
   padding: 0;
   max-width: 100%;
+  margin: 0 auto;
 }
 
 .message-bubble.mt-link {
@@ -106,6 +109,7 @@ html {
 }
 
 .mo-choice {
+  position: relative;
   background: @color-mo-bg-start;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
   color: @color-mo-text-start;
@@ -133,6 +137,36 @@ html {
   border-bottom-left-radius: 20px;
   box-shadow: none;
   transform: translate3d(0, 0, 0);
+}
+
+/* Media */
+ #container-media {
+  position: relative;
+  margin: 0 auto;
+  max-width: 400px;
+  padding: 20px;
+}
+
+.mt-media {
+  display: block;
+  top: 0;
+}
+
+/* Media shine */
+.mt-media-highlight {
+  margin: 0 25%;
+  position: absolute;
+  top: 0;
+  left: -150%;
+  z-index: 1;
+  display: block;
+  content: '';
+  width: 50%;
+  height: 125%;
+  background: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,.3) 100%);
+  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,.3) 100%);
+  -webkit-transform: skewX(-30deg);
+  transform: skewX(-30deg);
 }
 
 /**
