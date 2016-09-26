@@ -24,6 +24,7 @@
 <body>
 
   <div>
+    <div id="container-media"></div>
     <div id="container-messages"></div>
     <div id="end-section"></div>
   </div>
@@ -33,7 +34,7 @@
   <!-- Template for messages that are sent to the user. -->
   <script id="template-mt" type="text/template">
     <div>
-      <div class="mt message-bubble">
+      <div id="<?= id ?>" class="mt message-bubble">
         <? if (typeof message !== 'undefined') { ?>
           <?- message ?>
         <? } ?>
@@ -43,7 +44,7 @@
 
   <!-- Template for messages with links. -->
   <script id="template-mt-link" type="text/template">
-    <a class="message-bubble mt-link" href="<?= linkUrl ?>" target="_blank"
+    <a id="<?= id ?>" class="message-bubble mt-link" href="<?= linkUrl ?>" target="_blank"
       ga-on="click"
       ga-event-category="Article"
       ga-event-action="click">
@@ -59,7 +60,8 @@
 
   <!-- Template for messages with media sent to the user. -->
   <script id="template-mt-media" type="text/template">
-    <img class="message-bubble mt-media" src="https://<?= media ?>?w=400">
+      <img class="message-bubble mt-media" src="https://<?= media ?>?w=400">
+      <figure class="mt-media-highlight"></figure>
   </script>
 
   <!-- Template for button choices the user can tap to respond with. -->
