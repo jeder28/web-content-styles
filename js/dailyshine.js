@@ -9,10 +9,16 @@
   var DELAY_MO_DISPLAY = 450;
 
   // Duration of display animations
-  var DISPLAY_ANIM_DURATION = 750;
+  var DISPLAY_ANIM_DURATION = 300;
+
+  // Duration of spring animation
+  var DISPLAY_ANIM_SPRING = 120;
 
   // Duration of the viewport scroll animation
   var SCROLL_ANIM_DURATION = 1000;
+
+  // Distance for spring animation
+  var ANIM_SPRING_DISTANCE = '40px';
 
   // Queue for storing up messages to display
   var MESSAGE_QUEUE = [];
@@ -106,6 +112,8 @@
     var nextMessages;
     var template;
     var i;
+    var id;
+    var delay;
 
     // Merge user data into the message and turn URLs into links
     body = makeLinks(mergeData(localized(content.body)));
@@ -143,22 +151,65 @@
           data.linkUrl = localized(content.linkUrl);
         }
       }
-
+        id = 'mt-highlight-' + messageCounter + i;
+        data.id = id;
       // Render the template and add the message to the screen
       if (data.media) {
+        // Media animation
         template = $('#template-mt-media').html();
-      }
+        html = ejs.render(template, data, {delimiter: '?'});
+        element = $('#container-media').append(html).hide()
+          .delay(300)
+          .fadeIn(600);
+
+        $('.mt-media').css('top', '-500px')
+          .delay(500)
+          .animate({
+            top: '20px'
+          }, DISPLAY_ANIM_DURATION, 'swing')
+          .animate({
+            top: '0px'
+          }, DISPLAY_ANIM_SPRING, 'swing');
+
+        $('.mt-media-highlight').delay(900)
+          .animate({
+            left: '150%'
+          }, 900, 'swing');
+        }
       else if (data.linkTitle && data.linkUrl) {
         template = $('#template-mt-link').html();
+        id = 'mt-link-' + messageCounter + i;
+        data.id = id;
+        html = ejs.render(template, data, {delimiter: '?'});
+        element = $('#container-messages').append(html);
+
+        $('#' + id).css('left', '-200%').css('opacity', '0')
+          .delay(2700)
+          .animate({
+            left: ANIM_SPRING_DISTANCE,
+            opacity: 1
+          }, DISPLAY_ANIM_DURATION, 'swing')
+          .animate({
+            left: '0px'
+          }, DISPLAY_ANIM_SPRING, 'swing');
       }
       else {
         template = $('#template-mt').html();
+        id = 'mt-message-' + messageCounter + i;
+        data.id = id;
+        html = ejs.render(template, data, {delimiter: '?'});
+        element = $('#container-messages').append(html);
+
+        $('#' + id).css('left', '-200%').css('opacity', '0')
+          .delay(600)
+          .animate({
+            left: ANIM_SPRING_DISTANCE,
+            opacity: 1
+          }, DISPLAY_ANIM_DURATION, 'swing')
+          .animate({
+            left: '0px'
+          }, DISPLAY_ANIM_SPRING, 'swing');
       }
-      html = ejs.render(template, data, {delimiter: '?'});
-      element = $('#container-messages').append(html).children(':last');
-      element.hide()
-          .delay(DELAY_MT_DISPLAY * (i + 1))
-          .fadeIn(DISPLAY_ANIM_DURATION);
     }
 
     // Fetch MO options to show the user, if any
@@ -168,7 +219,7 @@
       loadMOChoices(nextMessages, displayDelay);
     }
     else {
-      onMessagesFinished(displayDelay);
+      onMessagesFinished(3600);
     }
   }
 
@@ -234,12 +285,11 @@
     var id;
     var template;
     var i;
-
+    var delay = 3600;
     // Create object for the container
     template = $('#template-mo-container').html();
     html = ejs.render(template, {messageCounter: messageCounter}, {delimiter: '?'});
     container = $(html);
-
     // Create objects for the individual choices
     for (i = 0; content && i < content.length; i++) {
       template = $('#template-mo-choice').html();
@@ -259,14 +309,20 @@
       // the choice, it can then display the content it finds in the queue.
       MESSAGE_QUEUE.push({id: id, content: content[i]});
     }
-
     // Add the new content to the DOM
     $('#container-messages')
       .append(container)
-      .children(':last')
-      .hide()
-      .delay(additionalDelay + DELAY_MO_DISPLAY)
-      .fadeIn(DISPLAY_ANIM_DURATION);
+
+    if (messageCounter > 1) { delay = 2400; }
+    $('#' + id).css('right', '-200%').css('opacity', '0')
+      .delay(delay)
+      .animate({
+        right: ANIM_SPRING_DISTANCE,
+        opacity: 1
+      }, DISPLAY_ANIM_DURATION, 'swing')
+      .animate({
+        right: '0px'
+      }, DISPLAY_ANIM_SPRING, 'swing');
   }
 
   /**
@@ -274,7 +330,6 @@
    */
   function onClickMOChoice() {
     var element = $(this);
-
     // Changing classes triggers animations
     element.addClass('-clicked');
     element.off('click');
@@ -502,8 +557,15 @@
     html = ejs.render(template, data, {delimiter: '?'});
     $('#end-section')
       .append(html)
-      .delay(displayDelay + DELAY_MO_DISPLAY)
+      .delay(displayDelay)
       .fadeIn(DISPLAY_ANIM_DURATION);
+
+    setTimeout(function() {
+      $('html, body').animate({
+        scrollTop: document.body.scrollHeight,
+      }, SCROLL_ANIM_DURATION);
+    }, 4000);
+
 
     // Send GA event
     if (ga) {
